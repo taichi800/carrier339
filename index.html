@@ -7,36 +7,36 @@
     <style>
         @font-face {
             font-family: 'OpenDyslexic';
-            src: url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Regular.woff2') format('woff2'),
-                 url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Regular.woff') format('woff'),
-                 url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Regular.otf') format('opentype');
+            src: url('../fonts/OpenDyslexic-Regular.woff2') format('woff2'),
+                 url('../fonts/OpenDyslexic-Regular.woff') format('woff'),
+                 url('../fonts/OpenDyslexic-Regular.otf') format('opentype');
             font-weight: normal;
             font-style: normal;
         }
 
         @font-face {
             font-family: 'OpenDyslexic';
-            src: url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Bold.woff2') format('woff2'),
-                 url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Bold.woff') format('woff'),
-                 url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Bold.otf') format('opentype');
+            src: url('../fonts/OpenDyslexic-Bold.woff2') format('woff2'),
+                 url('../fonts/OpenDyslexic-Bold.woff') format('woff'),
+                 url('../fonts/OpenDyslexic-Bold.otf') format('opentype');
             font-weight: bold;
             font-style: normal;
         }
 
         @font-face {
             font-family: 'OpenDyslexic';
-            src: url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Italic.woff2') format('woff2'),
-                 url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Italic.woff') format('woff'),
-                 url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Italic.otf') format('opentype');
+            src: url('../fonts/OpenDyslexic-Italic.woff2') format('woff2'),
+                 url('../fonts/OpenDyslexic-Italic.woff') format('woff'),
+                 url('../fonts/OpenDyslexic-Italic.otf') format('opentype');
             font-weight: normal;
             font-style: italic;
         }
 
         @font-face {
             font-family: 'OpenDyslexic';
-            src: url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Bold-Italic.woff2') format('woff2'),
-                 url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Bold-Italic.woff') format('woff'),
-                 url('https://taichi800.github.io/carrier339//font/OpenDyslexic-Bold-Italic.otf') format('opentype');
+            src: url('../fonts/OpenDyslexic-Bold-Italic.woff2') format('woff2'),
+                 url('../fonts/OpenDyslexic-Bold-Italic.woff') format('woff'),
+                 url('../fonts/OpenDyslexic-Bold-Italic.otf') format('opentype');
             font-weight: bold;
             font-style: italic;
         }
@@ -49,6 +49,8 @@
             background-color: #f5f5f5;
             color: #333;
         }
+
+        /* Toolbar Styles */
         #toolbar {
             display: flex;
             flex-wrap: wrap;
@@ -60,6 +62,7 @@
             top: 0;
             z-index: 1000;
         }
+
         #toolbar button, #toolbar input[type="range"], #appearance-menu {
             margin: 5px;
             padding: 10px;
@@ -68,25 +71,31 @@
             border-radius: 5px;
             cursor: pointer;
         }
+
         #toolbar button {
             background: #444;
             color: #fff;
         }
+
         #toolbar button:hover {
             background: #666;
         }
+
         #appearance-menu {
             background: #444;
             color: #fff;
             padding: 10px;
             border-radius: 5px;
         }
+
         #advanced-settings {
             display: none;
             background: #eee;
             padding: 10px;
             margin-top: 10px;
         }
+
+        /* Article Styles */
         article {
             max-width: 800px;
             margin: 20px auto;
@@ -232,6 +241,8 @@
         article.style.wordSpacing = `${e.target.value}px`;
     });
 </script>
-
+    
 </body>
 </html>
+
+
