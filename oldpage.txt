@@ -131,8 +131,6 @@
         <option value="gray">Gray</option>
         <option value="high-contrast">High Contrast</option>
     </select>
-    <button id="text-to-speech">🔊 Read Aloud</button>
-
     <button id="toggle-advanced">Toggle Advanced Settings</button>
 </div>
 
@@ -213,14 +211,6 @@
                 document.body.style.color = '#00ff00'; // High contrast green text
                 break;
         }
-    });
-
-    const article = document.querySelector('article');
-    const speechButton = document.getElementById('text-to-speech');
-
-    speechButton.addEventListener('click', () => {
-        const utterance = new SpeechSynthesisUtterance(article.innerText);
-        speechSynthesis.speak(utterance);
     });
 
     // Advanced settings toggle
