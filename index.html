@@ -155,7 +155,7 @@
     const speechButton = document.getElementById('text-to-speech');
     const advancedSettings = document.getElementById('advanced-settings');
     const toggleAdvanced = document.getElementById('toggle-advanced');
-    
+
     speechButton.addEventListener('click', () => {
         const utterance = new SpeechSynthesisUtterance(article.innerText);
         speechSynthesis.speak(utterance);
