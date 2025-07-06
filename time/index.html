@@ -2,258 +2,107 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>World Time</title>
+  <title>World Clock by UTC</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      font-family: sans-serif;
       background: #111;
       color: #eee;
-      padding: 2em;
+      font-family: sans-serif;
+      padding: 1em;
+    }
+    h1 {
       text-align: center;
+      margin-bottom: 1em;
     }
-    h1 { margin-bottom: 1em; }
-    .clock {
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1em;
-      margin-top: 2em;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     }
-    .zone {
+    .column {
       background: #222;
       padding: 1em;
       border-radius: 8px;
-      box-shadow: 0 0 5px #000;
     }
-    .zone h2 {
-      margin: 0.2em 0;
+    .column h2 {
+      text-align: center;
+      margin-top: 0;
+    }
+    .city {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95em;
+      padding: 0.2em 0;
     }
     .time {
-      font-size: 1.5em;
       font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>World Clock</h1>
-  <div class="clock" id="clock"></div>
+  <h1>World Time by UTC</h1>
+  <div class="grid" id="timeGrid"></div>
 
   <script>
-    const zones = [
-      { name: 'New York', tz: 'America/New_York' },
-      { name: 'London', tz: 'Europe/London' },
-      { name: 'Stockholm', tz: 'Europe/Stockholm' },
-      { name: 'Tokyo', tz: 'Asia/Tokyo' },
-      { name: 'Sydney', tz: 'Australia/Sydney' },
-      { name: 'UTC', tz: 'UTC' }
-      { name: 'Seoul', tz: 'Asia/Seoul' },
-  { name: 'Andong', tz: 'Asia/Seoul' },
-  { name: 'Vladivostok', tz: 'Asia/Vladivostok' },
-  { name: 'Harbin', tz: 'Asia/Shanghai' },
-  { name: 'Beijing', tz: 'Asia/Shanghai' },
-  { name: 'Nanjing', tz: 'Asia/Shanghai' },
-  { name: 'Shanghai', tz: 'Asia/Shanghai' },
-  { name: 'Taipei', tz: 'Asia/Taipei' },
-  { name: 'Shenzhen', tz: 'Asia/Shanghai' },
-  { name: 'Guangzhou', tz: 'Asia/Shanghai' },
-  { name: 'Hong Kong', tz: 'Asia/Hong_Kong' },
-  { name: 'Xian', tz: 'Asia/Shanghai' },
-  { name: 'Changsha', tz: 'Asia/Shanghai' },
-  { name: 'Chongqing', tz: 'Asia/Shanghai' },
-  { name: 'Lanzhou', tz: 'Asia/Shanghai' },
-  { name: 'Lhasa', tz: 'Asia/Urumqi' },
-  { name: 'Ürümqi', tz: 'Asia/Urumqi' },
-  { name: 'Hotan', tz: 'Asia/Urumqi' },
-  { name: 'Kashgar', tz: 'Asia/Urumqi' },
-  { name: 'Gar', tz: 'Asia/Urumqi' },
-  { name: 'Kathmandu', tz: 'Asia/Kathmandu' },
-  { name: 'Punakha', tz: 'Asia/Thimphu' },
-  { name: 'Darjeeling', tz: 'Asia/Kolkata' },
-  { name: 'Naha', tz: 'Asia/Tokyo' },
-  { name: 'Kagoshima', tz: 'Asia/Tokyo' },
-  { name: 'Kyoto', tz: 'Asia/Tokyo' },
-  { name: 'Tokyo', tz: 'Asia/Tokyo' },
-  { name: 'Sapporo', tz: 'Asia/Tokyo' },
-  { name: 'Petropavlovsk', tz: 'Asia/Kamchatka' },
-  { name: 'Anchorage', tz: 'America/Anchorage' },
-  { name: 'Manila', tz: 'Asia/Manila' },
-  { name: 'Lahore', tz: 'Asia/Karachi' },
-  { name: 'Delhi', tz: 'Asia/Kolkata' },
-  { name: 'Dhaka', tz: 'Asia/Dhaka' },
-  { name: 'Imphal', tz: 'Asia/Kolkata' },
-  { name: 'Mandalay', tz: 'Asia/Yangon' },
-  { name: 'Rangoon', tz: 'Asia/Yangon' },
-  { name: 'Bangkok', tz: 'Asia/Bangkok' },
-  { name: 'Phnom Penh', tz: 'Asia/Phnom_Penh' },
-  { name: 'Hanoi', tz: 'Asia/Bangkok' },
-  { name: 'Kuala Lumpur', tz: 'Asia/Kuala_Lumpur' },
-  { name: 'Singapore', tz: 'Asia/Singapore' },
-  { name: 'Java', tz: 'Asia/Jakarta' },
-  { name: 'Macassar', tz: 'Asia/Makassar' },
-  { name: 'Madang', tz: 'Pacific/Port_Moresby' },
-  { name: 'Port Moresby', tz: 'Pacific/Port_Moresby' },
-  { name: 'Sydney', tz: 'Australia/Sydney' },
-  { name: 'Darwin', tz: 'Australia/Darwin' },
-  { name: 'Perth', tz: 'Australia/Perth' },
-  { name: 'Auckland', tz: 'Pacific/Auckland' },
-  { name: 'Suva', tz: 'Pacific/Fiji' },
-  { name: 'Papeete', tz: 'Pacific/Tahiti' },
-  { name: 'Galapagos', tz: 'Pacific/Galapagos' },
-  { name: 'Easter Island', tz: 'Pacific/Easter' },
-  { name: 'Line Islands', tz: 'Pacific/Kiritimati' },
-  { name: 'Marshall Islands', tz: 'Pacific/Majuro' },
-  { name: 'Guam', tz: 'Pacific/Guam' },
-  { name: 'Marcus Island', tz: 'Pacific/Wake' },
-  { name: 'Madras', tz: 'Asia/Kolkata' },
-  { name: 'Trivandrum', tz: 'Asia/Kolkata' },
-  { name: 'Cochin', tz: 'Asia/Kolkata' },
-  { name: 'Bombay', tz: 'Asia/Kolkata' },
-  { name: 'Hyderabad', tz: 'Asia/Kolkata' },
-  { name: 'Bhopal', tz: 'Asia/Kolkata' },
-  { name: 'Khiva', tz: 'Asia/Samarkand' },
-  { name: 'Bukhara', tz: 'Asia/Samarkand' },
-  { name: 'Omsk', tz: 'Asia/Omsk' },
-  { name: 'Irkutsk', tz: 'Asia/Irkutsk' },
-  { name: 'Ulan Bator', tz: 'Asia/Ulaanbaatar' },
-  { name: 'Tannu Tuva', tz: 'Asia/Krasnoyarsk' },
-  { name: 'Kazan', tz: 'Europe/Moscow' },
-  { name: 'Kuwait', tz: 'Asia/Kuwait' },
-  { name: 'Yerevan', tz: 'Asia/Yerevan' },
-  { name: 'Moscow', tz: 'Europe/Moscow' },
-  { name: 'Kyiv', tz: 'Europe/Kyiv' },
-  { name: 'Helsinki', tz: 'Europe/Helsinki' },
-  { name: 'Stockholm', tz: 'Europe/Stockholm' },
-  { name: 'Copenhagen', tz: 'Europe/Copenhagen' },
-  { name: 'Oslo', tz: 'Europe/Oslo' },
-  { name: 'Bergen', tz: 'Europe/Oslo' },
-  { name: 'Warsaw', tz: 'Europe/Warsaw' },
-  { name: 'Budapest', tz: 'Europe/Budapest' },
-  { name: 'Bucharest', tz: 'Europe/Bucharest' },
-  { name: 'Sofia', tz: 'Europe/Sofia' },
-  { name: 'Istanbul', tz: 'Europe/Istanbul' },
-  { name: 'Aleppo', tz: 'Asia/Damascus' },
-  { name: 'Tel Aviv', tz: 'Asia/Jerusalem' },
-  { name: 'Addis Ababa', tz: 'Africa/Addis_Ababa' },
-  { name: 'Cairo', tz: 'Africa/Cairo' },
-  { name: 'Mombasa', tz: 'Africa/Nairobi' },
-  { name: 'Johannesburg', tz: 'Africa/Johannesburg' },
-  { name: 'Cape Town', tz: 'Africa/Johannesburg' },
-  { name: 'Lagos', tz: 'Africa/Lagos' },
-  { name: 'Accra', tz: 'Africa/Accra' },
-  { name: 'Abidjan', tz: 'Africa/Abidjan' },
-  { name: 'Dakar', tz: 'Africa/Dakar' },
-  { name: 'Rabat', tz: 'Africa/Casablanca' },
-  { name: 'Algiers', tz: 'Africa/Algiers' },
-  { name: 'Tunis', tz: 'Africa/Tunis' },
-  { name: 'Palermo', tz: 'Europe/Rome' },
-  { name: 'Athens', tz: 'Europe/Athens' },
-  { name: 'Tirana', tz: 'Europe/Tirane' },
-  { name: 'Belgrade', tz: 'Europe/Belgrade' },
-  { name: 'Ljubljana', tz: 'Europe/Ljubljana' },
-  { name: 'Venice', tz: 'Europe/Rome' },
-  { name: 'Genoa', tz: 'Europe/Rome' },
-  { name: 'Florence', tz: 'Europe/Rome' },
-  { name: 'Rome', tz: 'Europe/Rome' },
-  { name: 'Naples', tz: 'Europe/Rome' },
-  { name: 'Bern', tz: 'Europe/Zurich' },
-  { name: 'Geneva', tz: 'Europe/Zurich' },
-  { name: 'Zurich', tz: 'Europe/Zurich' },
-  { name: 'Vienna', tz: 'Europe/Vienna' },
-  { name: 'Prague', tz: 'Europe/Prague' },
-  { name: 'Bratislava', tz: 'Europe/Bratislava' },
-  { name: 'Berlin', tz: 'Europe/Berlin' },
-  { name: 'Munich', tz: 'Europe/Berlin' },
-  { name: 'Hanover', tz: 'Europe/Berlin' },
-  { name: 'Amsterdam', tz: 'Europe/Amsterdam' },
-  { name: 'Brussels', tz: 'Europe/Brussels' },
-  { name: 'London', tz: 'Europe/London' },
-  { name: 'Manchester', tz: 'Europe/London' },
-  { name: 'Swansea', tz: 'Europe/London' },
-  { name: 'Glasgow', tz: 'Europe/London' },
-  { name: 'Dublin', tz: 'Europe/Dublin' },
-  { name: 'Iceland', tz: 'Atlantic/Reykjavik' },
-  { name: 'Nuuk', tz: 'America/Godthab' },
-  { name: 'Paris', tz: 'Europe/Paris' },
-  { name: 'Marseille', tz: 'Europe/Paris' },
-  { name: 'Bordeaux', tz: 'Europe/Paris' },
-  { name: 'Brest', tz: 'Europe/Paris' },
-  { name: 'Barcelona', tz: 'Europe/Madrid' },
-  { name: 'Madrid', tz: 'Europe/Madrid' },
-  { name: 'Seville', tz: 'Europe/Madrid' },
-  { name: 'Lisbon', tz: 'Europe/Lisbon' },
-  { name: 'Buenos Aires', tz: 'America/Argentina/Buenos_Aires' },
-  { name: 'Santiago', tz: 'America/Santiago' },
-  { name: 'La Paz', tz: 'America/La_Paz' },
-  { name: 'Lima', tz: 'America/Lima' },
-  { name: 'Rio de Janeiro', tz: 'America/Sao_Paulo' },
-  { name: 'Georgetown', tz: 'America/Guyana' },
-  { name: 'Quito', tz: 'America/Guayaquil' },
-  { name: 'Bogota', tz: 'America/Bogota' },
-  { name: 'Medellín', tz: 'America/Bogota' },
-  { name: 'Panama', tz: 'America/Panama' },
-  { name: 'Kingston', tz: 'America/Jamaica' },
-  { name: 'Mexico City', tz: 'America/Mexico_City' },
-  { name: 'Vancouver', tz: 'America/Vancouver' },
-  { name: 'Seattle', tz: 'America/Los_Angeles' },
-  { name: 'Portland', tz: 'America/Los_Angeles' },
-  { name: 'Los Angeles', tz: 'America/Los_Angeles' },
-  { name: 'Sacramento', tz: 'America/Los_Angeles' },
-  { name: 'Phoenix', tz: 'America/Phoenix' },
-  { name: 'Las Vegas', tz: 'America/Los_Angeles' },
-  { name: 'Santa Fe', tz: 'America/Denver' },
-  { name: 'Dallas', tz: 'America/Chicago' },
-  { name: 'Fort Worth', tz: 'America/Chicago' },
-  { name: 'El Paso', tz: 'America/Denver' },
-  { name: 'Oklahoma City', tz: 'America/Chicago' },  
-  { name: 'Omaha', tz: 'America/Chicago' },
-  { name: 'Bismarck', tz: 'America/North_Dakota/Bismarck' },
-  { name: 'Minneapolis', tz: 'America/Chicago' },
-  { name: 'Madison', tz: 'America/Chicago' },
-  { name: 'Chicago', tz: 'America/Chicago' },
-  { name: 'Detroit', tz: 'America/Detroit' },
-  { name: 'New Orleans', tz: 'America/Chicago' },
-  { name: 'Nashville', tz: 'America/Chicago' },
-  { name: 'Atlanta', tz: 'America/New_York' },
-  { name: 'Miami', tz: 'America/New_York' },
-  { name: 'Cleveland', tz: 'America/New_York' },
-  { name: 'Richmond', tz: 'America/New_York' },
-  { name: 'Washington', tz: 'America/New_York' },
-  { name: 'Buffalo', tz: 'America/New_York' },
-  { name: 'Philadelphia', tz: 'America/New_York' },
-  { name: 'New York City', tz: 'America/New_York' },
-  { name: 'Boston', tz: 'America/New_York' },
-  { name: 'Toronto', tz: 'America/Toronto' },
-  { name: 'Montreal', tz: 'America/Toronto' },
-  { name: 'Quebec City', tz: 'America/Toronto' },
-  { name: 'Halifax', tz: 'America/Halifax' },
-  { name: 'St Johns', tz: 'America/St_Johns' },
-  { name: 'Goose Bay', tz: 'America/Goose_Bay' },
-  { name: 'Edmonton', tz: 'America/Edmonton' },
-    ];
+    const cityGroups = {
+      'UTC-10': ['Honolulu', 'Papeete'],
+      'UTC-8': ['Anchorage'],
+      'UTC-7': ['Los Angeles', 'Vancouver'],
+      'UTC-6': ['Mexico City', 'Chicago'],
+      'UTC-5': ['New York', 'Lima'],
+      'UTC-4': ['Santiago', 'Halifax'],
+      'UTC-3': ['Buenos Aires'],
+      'UTC-2.5': ['St. John\'s'],
+      'UTC+0': ['London', 'Accra'],
+      'UTC+1': ['Paris', 'Berlin', 'Rome'],
+      'UTC+2': ['Athens', 'Cairo'],
+      'UTC+3': ['Moscow', 'Baghdad'],
+      'UTC+3.5': ['Tehran'],
+      'UTC+4': ['Dubai', 'Baku'],
+      'UTC+5': ['Tashkent', 'Karachi'],
+      'UTC+5.5': ['Delhi'],
+      'UTC+5.75': ['Kathmandu'],
+      'UTC+6': ['Dhaka'],
+      'UTC+6.5': ['Yangon'],
+      'UTC+7': ['Bangkok', 'Jakarta'],
+      'UTC+8': ['Beijing', 'Singapore', 'Perth'],
+      'UTC+9': ['Tokyo', 'Seoul'],
+      'UTC+10': ['Sydney'],
+      'UTC+12': ['Auckland'],
+      'UTC+14': ['Line Islands']
+    };
 
-    function updateClocks() {
-      const container = document.getElementById('clock');
-      container.innerHTML = '';
-
-      zones.forEach(({ name, tz }) => {
-        const now = new Date();
-        const formatter = new Intl.DateTimeFormat('en-US', {
-          timeZone: tz,
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          hour12: false
-        });
-        const time = formatter.format(now);
-        const zoneEl = document.createElement('div');
-        zoneEl.className = 'zone';
-        zoneEl.innerHTML = `<h2>${name}</h2><div class="time">${time}</div>`;
-        container.appendChild(zoneEl);
-      });
+    function getTimeForOffset(offset) {
+      const now = new Date();
+      const offsetHours = parseFloat(offset.replace('UTC', ''));
+      const localTime = new Date(now.getTime() + offsetHours * 60 * 60 * 1000);
+      return localTime.toISOString().substr(11, 5); // HH:MM
     }
 
-    setInterval(updateClocks, 1000);
-    updateClocks();
+    function updateTimeGrid() {
+      const grid = document.getElementById('timeGrid');
+      grid.innerHTML = '';
+
+      Object.keys(cityGroups)
+        .sort((a, b) => parseFloat(a.replace('UTC', '')) - parseFloat(b.replace('UTC', '')))
+        .forEach(offset => {
+          const col = document.createElement('div');
+          col.className = 'column';
+          const time = getTimeForOffset(offset);
+          col.innerHTML = `<h2>${offset}<br><span class="time">${time}</span></h2>`;
+          cityGroups[offset].forEach(city => {
+            const row = document.createElement('div');
+            row.className = 'city';
+            row.innerHTML = `<span>${city}</span><span class="time">${time}</span>`;
+            col.appendChild(row);
+          });
+          grid.appendChild(col);
+        });
+    }
+
+    setInterval(updateTimeGrid, 1000);
+    updateTimeGrid();
   </script>
 </body>
 </html>
