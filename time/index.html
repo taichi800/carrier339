@@ -92,7 +92,38 @@
         .forEach(offset => {
           const col = document.createElement('div');
           col.className = 'column';
-          const time = getTimeForOffset(offset);
+          function getTimeForOffset(offsetLabel) {
+  const now = new Date();
+
+  // Optional: map certain UTC labels to real IANA zones
+  const ianaMap = {
+    'UTC+5.5': 'Asia/Kolkata',
+    'UTC+5.75': 'Asia/Kathmandu',
+    'UTC+6.5': 'Asia/Yangon',
+    'UTC+8': 'Asia/Shanghai',
+    'UTC+10': 'Australia/Sydney',
+    'UTC+12': 'Pacific/Auckland',
+    'UTC+1': 'Europe/Berlin',
+    'UTC+2': 'Europe/Athens',
+    'UTC+3': 'Europe/Moscow',
+    'UTC+0': 'Etc/UTC',
+    // Add more mappings as needed
+  };
+
+  if (ianaMap[offsetLabel]) {
+    return new Intl.DateTimeFormat('en-US', {
+      timeZone: ianaMap[offsetLabel],
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false
+    }).format(now);
+  } else {
+    // Fallback: fixed UTC math for uncommon zones
+    const offsetHours = parseFloat(offsetLabel.replace('UTC', ''));
+    const localTime = new Date(now.getTime() + offsetHours * 60 * 60 * 1000);
+    return localTime.toISOString().substr(11, 5);
+  }
+}
           col.innerHTML = `<h2>${offset}<br><span class="time">${time}</span></h2>`;
           cityGroups[offset].forEach(city => {
             const row = document.createElement('div');
