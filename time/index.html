@@ -45,80 +45,132 @@
   <div class="grid" id="timeGrid"></div>
 
 <script>
-  const cityGroups = {
-    'UTC-10': ['Honolulu', 'Papeete'],
-    'UTC-8': ['Anchorage'],
-    'UTC-7': ['Los Angeles', 'Vancouver'],
-    'UTC-6': ['Mexico City', 'Chicago'],
-    'UTC-5': ['New York', 'Lima'],
-    'UTC-4': ['Santiago', 'Halifax'],
-    'UTC-3': ['Buenos Aires'],
-    'UTC-2.5': ['St. John\'s'],
-    'UTC-1': ['Azores'],
-    'UTC+0': ['London', 'Accra'],
-    'UTC+1': ['Paris', 'Berlin', 'Rome', 'Copenhagen'],
-    'UTC+1.5': ['Namibia (historical)'],
-    'UTC+2': ['Athens', 'Cairo'],
-    'UTC+3': ['Moscow', 'Baghdad'],
-    'UTC+3.5': ['Tehran'],
-    'UTC+4': ['Dubai', 'Baku'],
-    'UTC+5': ['Tashkent', 'Karachi'],
-    'UTC+5.5': ['Delhi'],
-    'UTC+5.75': ['Kathmandu'],
-    'UTC+6': ['Dhaka'],
-    'UTC+6.5': ['Yangon'],
-    'UTC+6.75': ['Cocos Islands'],
-    'UTC+7': ['Bangkok', 'Jakarta'],
-    'UTC+8': ['Beijing', 'Singapore', 'Perth'],
-    'UTC+9': ['Tokyo', 'Seoul'],
-    'UTC+10': ['Sydney'],
-    'UTC+10.75': ['Norfolk Island'],
-    'UTC+12': ['Auckland'],
-    'UTC+14': ['Line Islands']
+  const cityZones = {
+    'Honolulu': 'Pacific/Honolulu',
+    'Papeete': 'Pacific/Tahiti',
+    'Anchorage': 'America/Anchorage',
+    'Los Angeles': 'America/Los_Angeles',
+    'Vancouver': 'America/Vancouver',
+    'Mexico City': 'America/Mexico_City',
+    'Chicago': 'America/Chicago',
+    'New York': 'America/New_York',
+    'Lima': 'America/Lima',
+    'Santiago': 'America/Santiago',
+    'Halifax': 'America/Halifax',
+    'Buenos Aires': 'America/Argentina/Buenos_Aires',
+    'St. John\'s': 'America/St_Johns',
+    'Azores': 'Atlantic/Azores',
+    'London': 'Europe/London',
+    'Accra': 'Africa/Accra',
+    'Paris': 'Europe/Paris',
+    'Berlin': 'Europe/Berlin',
+    'Rome': 'Europe/Rome',
+    'Copenhagen': 'Europe/Copenhagen',
+    'Namibia (historical)': null, // fallback UTC+1.5
+    'Athens': 'Europe/Athens',
+    'Cairo': 'Africa/Cairo',
+    'Moscow': 'Europe/Moscow',
+    'Baghdad': 'Asia/Baghdad',
+    'Tehran': 'Asia/Tehran',
+    'Dubai': 'Asia/Dubai',
+    'Baku': 'Asia/Baku',
+    'Tashkent': 'Asia/Tashkent',
+    'Karachi': 'Asia/Karachi',
+    'Delhi': 'Asia/Kolkata',
+    'Kathmandu': 'Asia/Kathmandu',
+    'Dhaka': 'Asia/Dhaka',
+    'Yangon': 'Asia/Yangon',
+    'Cocos Islands': null, // fallback UTC+6.75
+    'Bangkok': 'Asia/Bangkok',
+    'Jakarta': 'Asia/Jakarta',
+    'Beijing': 'Asia/Shanghai',
+    'Singapore': 'Asia/Singapore',
+    'Perth': 'Australia/Perth',
+    'Tokyo': 'Asia/Tokyo',
+    'Seoul': 'Asia/Seoul',
+    'Sydney': 'Australia/Sydney',
+    'Norfolk Island': null, // fallback UTC+10.75
+    'Auckland': 'Pacific/Auckland',
+    'Line Islands': null // fallback UTC+14
   };
 
-  function getTimeForOffset(offsetLabel) {
+  function getTimeForCity(city) {
     const now = new Date();
-    const ianaMap = {
-      'UTC+5.5': 'Asia/Kolkata',
-      'UTC+5.75': 'Asia/Kathmandu',
-      'UTC+6.5': 'Asia/Yangon',
-      'UTC+8': 'Asia/Shanghai',
-      'UTC+10': 'Australia/Sydney',
-      'UTC+12': 'Pacific/Auckland',
-      'UTC+1': 'Europe/Berlin',
-      'UTC+2': 'Europe/Athens',
-      'UTC+3': 'Europe/Moscow',
-      'UTC+0': 'Etc/UTC',
-      'UTC-1': 'Atlantic/Azores'
-    };
-
-    if (ianaMap[offsetLabel]) {
+    const tz = cityZones[city];
+    if (tz) {
       return new Intl.DateTimeFormat('en-US', {
-        timeZone: ianaMap[offsetLabel],
+        timeZone: tz,
         hour: '2-digit',
         minute: '2-digit',
         hour12: false
       }).format(now);
     } else {
-      const offsetHours = parseFloat(offsetLabel.replace('UTC', ''));
-      const localTime = new Date(now.getTime() + offsetHours * 60 * 60 * 1000);
-      return localTime.toISOString().substr(11, 5);
+      // Fallback static UTC offset
+      const manualOffsets = {
+        'Namibia (historical)': 1.5,
+        'Cocos Islands': 6.75,
+        'Norfolk Island': 10.75,
+        'Line Islands': 14
+      };
+      const offset = manualOffsets[city];
+      if (offset !== undefined) {
+        const t = new Date(now.getTime() + offset * 60 * 60 * 1000);
+        return t.toISOString().substring(11, 16);
+      } else {
+        return '--:--';
+      }
     }
+  }
+
+  function groupCitiesByUTC() {
+    const grouped = {};
+    Object.keys(cityZones).forEach(city => {
+      const tz = cityZones[city];
+      let offsetLabel;
+
+      if (tz) {
+        const now = new Date();
+        const localTime = new Intl.DateTimeFormat('en-US', {
+          timeZone: tz,
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZoneName: 'short'
+        }).formatToParts(now);
+        const part = localTime.find(p => p.type === 'timeZoneName');
+        offsetLabel = part ? part.value.replace(/^GMT/, 'UTC') : 'UTC?';
+      } else {
+        // fallback
+        const manualOffsets = {
+          'Namibia (historical)': '+1.5',
+          'Cocos Islands': '+6.75',
+          'Norfolk Island': '+10.75',
+          'Line Islands': '+14'
+        };
+        offsetLabel = 'UTC' + manualOffsets[city];
+      }
+
+      if (!grouped[offsetLabel]) grouped[offsetLabel] = [];
+      grouped[offsetLabel].push(city);
+    });
+    return grouped;
   }
 
   function updateTimeGrid() {
     const grid = document.getElementById('timeGrid');
     grid.innerHTML = '';
 
-    Object.keys(cityGroups)
+    const groups = groupCitiesByUTC();
+    Object.keys(groups)
       .sort((a, b) => parseFloat(a.replace('UTC', '')) - parseFloat(b.replace('UTC', '')))
       .forEach(offset => {
         const col = document.createElement('div');
         col.className = 'column';
-        const time = getTimeForOffset(offset);
-        col.innerHTML = `<h2>${offset}<br><span class="time">${time}</span></h2>`;
-        cityGroups[offset].forEach(city => {
+        const firstCity = groups[offset][0];
+        const nowTime = getTimeForCity(firstCity);
+        col.innerHTML = `<h2>${offset}<br><span class="time">${nowTime}</span></h2>`;
+        groups[offset].forEach(city => {
+          const time = getTimeForCity(city);
           const row = document.createElement('div');
           row.className = 'city';
           row.innerHTML = `<span>${city}</span><span class="time">${time}</span>`;
