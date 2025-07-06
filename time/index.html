@@ -44,99 +44,93 @@
   <h1>World Time by UTC</h1>
   <div class="grid" id="timeGrid"></div>
 
-  <script>
-    const cityGroups = {
-      'UTC-10': ['Honolulu', 'Papeete'],
-      'UTC-8': ['Anchorage'],
-      'UTC-7': ['Los Angeles', 'Vancouver'],
-      'UTC-6': ['Mexico City', 'Chicago'],
-      'UTC-5': ['New York', 'Lima'],
-      'UTC-4': ['Santiago', 'Halifax'],
-      'UTC-3': ['Buenos Aires'],
-      'UTC-2.5': ['St. John\'s'],
-      'UTC+0': ['London', 'Accra'],
-      'UTC+1': ['Paris', 'Berlin', 'Rome', 'Copenhagen'],
-      'UTC+1.5': ['Namibia (historical)'],
-      'UTC+2': ['Athens', 'Cairo'],
-      'UTC+3': ['Moscow', 'Baghdad'],
-      'UTC+3.5': ['Tehran'],
-      'UTC+4': ['Dubai', 'Baku'],
-      'UTC+5': ['Tashkent', 'Karachi'],
-      'UTC+5.5': ['Delhi'],
-      'UTC+5.75': ['Kathmandu'],
-      'UTC+6': ['Dhaka'],
-      'UTC+6.5': ['Yangon'],
-      'UTC+6.75': ['Cocos Islands'],
-      'UTC+7': ['Bangkok', 'Jakarta'],
-      'UTC+8': ['Beijing', 'Singapore', 'Perth'],
-      'UTC+9': ['Tokyo', 'Seoul'],
-      'UTC+10': ['Sydney'],
-      'UTC+10.75': ['Norfolk Island'],
-      'UTC+12': ['Auckland'],
-      'UTC+14': ['Line Islands']
-    };
-
-    function getTimeForOffset(offset) {
-      const now = new Date();
-      const offsetHours = parseFloat(offset.replace('UTC', ''));
-      const localTime = new Date(now.getTime() + offsetHours * 60 * 60 * 1000);
-      return localTime.toISOString().substr(11, 5); // HH:MM
-    }
-
-    function updateTimeGrid() {
-      const grid = document.getElementById('timeGrid');
-      grid.innerHTML = '';
-
-      Object.keys(cityGroups)
-        .sort((a, b) => parseFloat(a.replace('UTC', '')) - parseFloat(b.replace('UTC', '')))
-        .forEach(offset => {
-          const col = document.createElement('div');
-          col.className = 'column';
-          function getTimeForOffset(offsetLabel) {
-  const now = new Date();
-
-  // Optional: map certain UTC labels to real IANA zones
-  const ianaMap = {
-    'UTC+5.5': 'Asia/Kolkata',
-    'UTC+5.75': 'Asia/Kathmandu',
-    'UTC+6.5': 'Asia/Yangon',
-    'UTC+8': 'Asia/Shanghai',
-    'UTC+10': 'Australia/Sydney',
-    'UTC+12': 'Pacific/Auckland',
-    'UTC+1': 'Europe/Berlin',
-    'UTC+2': 'Europe/Athens',
-    'UTC+3': 'Europe/Moscow',
-    'UTC+0': 'Etc/UTC',
-    // Add more mappings as needed
+<script>
+  const cityGroups = {
+    'UTC-10': ['Honolulu', 'Papeete'],
+    'UTC-8': ['Anchorage'],
+    'UTC-7': ['Los Angeles', 'Vancouver'],
+    'UTC-6': ['Mexico City', 'Chicago'],
+    'UTC-5': ['New York', 'Lima'],
+    'UTC-4': ['Santiago', 'Halifax'],
+    'UTC-3': ['Buenos Aires'],
+    'UTC-2.5': ['St. John\'s'],
+    'UTC-1': ['Azores'],
+    'UTC+0': ['London', 'Accra'],
+    'UTC+1': ['Paris', 'Berlin', 'Rome', 'Copenhagen'],
+    'UTC+1.5': ['Namibia (historical)'],
+    'UTC+2': ['Athens', 'Cairo'],
+    'UTC+3': ['Moscow', 'Baghdad'],
+    'UTC+3.5': ['Tehran'],
+    'UTC+4': ['Dubai', 'Baku'],
+    'UTC+5': ['Tashkent', 'Karachi'],
+    'UTC+5.5': ['Delhi'],
+    'UTC+5.75': ['Kathmandu'],
+    'UTC+6': ['Dhaka'],
+    'UTC+6.5': ['Yangon'],
+    'UTC+6.75': ['Cocos Islands'],
+    'UTC+7': ['Bangkok', 'Jakarta'],
+    'UTC+8': ['Beijing', 'Singapore', 'Perth'],
+    'UTC+9': ['Tokyo', 'Seoul'],
+    'UTC+10': ['Sydney'],
+    'UTC+10.75': ['Norfolk Island'],
+    'UTC+12': ['Auckland'],
+    'UTC+14': ['Line Islands']
   };
 
-  if (ianaMap[offsetLabel]) {
-    return new Intl.DateTimeFormat('en-US', {
-      timeZone: ianaMap[offsetLabel],
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false
-    }).format(now);
-  } else {
-    // Fallback: fixed UTC math for uncommon zones
-    const offsetHours = parseFloat(offsetLabel.replace('UTC', ''));
-    const localTime = new Date(now.getTime() + offsetHours * 60 * 60 * 1000);
-    return localTime.toISOString().substr(11, 5);
-  }
-}
-          col.innerHTML = `<h2>${offset}<br><span class="time">${time}</span></h2>`;
-          cityGroups[offset].forEach(city => {
-            const row = document.createElement('div');
-            row.className = 'city';
-            row.innerHTML = `<span>${city}</span><span class="time">${time}</span>`;
-            col.appendChild(row);
-          });
-          grid.appendChild(col);
-        });
-    }
+  function getTimeForOffset(offsetLabel) {
+    const now = new Date();
+    const ianaMap = {
+      'UTC+5.5': 'Asia/Kolkata',
+      'UTC+5.75': 'Asia/Kathmandu',
+      'UTC+6.5': 'Asia/Yangon',
+      'UTC+8': 'Asia/Shanghai',
+      'UTC+10': 'Australia/Sydney',
+      'UTC+12': 'Pacific/Auckland',
+      'UTC+1': 'Europe/Berlin',
+      'UTC+2': 'Europe/Athens',
+      'UTC+3': 'Europe/Moscow',
+      'UTC+0': 'Etc/UTC',
+      'UTC-1': 'Atlantic/Azores'
+    };
 
-    setInterval(updateTimeGrid, 1000);
-    updateTimeGrid();
-  </script>
+    if (ianaMap[offsetLabel]) {
+      return new Intl.DateTimeFormat('en-US', {
+        timeZone: ianaMap[offsetLabel],
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false
+      }).format(now);
+    } else {
+      const offsetHours = parseFloat(offsetLabel.replace('UTC', ''));
+      const localTime = new Date(now.getTime() + offsetHours * 60 * 60 * 1000);
+      return localTime.toISOString().substr(11, 5);
+    }
+  }
+
+  function updateTimeGrid() {
+    const grid = document.getElementById('timeGrid');
+    grid.innerHTML = '';
+
+    Object.keys(cityGroups)
+      .sort((a, b) => parseFloat(a.replace('UTC', '')) - parseFloat(b.replace('UTC', '')))
+      .forEach(offset => {
+        const col = document.createElement('div');
+        col.className = 'column';
+        const time = getTimeForOffset(offset);
+        col.innerHTML = `<h2>${offset}<br><span class="time">${time}</span></h2>`;
+        cityGroups[offset].forEach(city => {
+          const row = document.createElement('div');
+          row.className = 'city';
+          row.innerHTML = `<span>${city}</span><span class="time">${time}</span>`;
+          col.appendChild(row);
+        });
+        grid.appendChild(col);
+      });
+  }
+
+  setInterval(updateTimeGrid, 1000);
+  updateTimeGrid();
+</script>
+
 </body>
 </html>
